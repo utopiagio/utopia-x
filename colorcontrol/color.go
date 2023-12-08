@@ -16,7 +16,7 @@ type GoColorState struct {
 	R, G, B, A uint8
 }
 
-// GoColorControlObj renders a color control using utopia widgets.
+// GoColorControlObj lays out a color control using utopia widgets.
 type GoColorControlObj struct {
 	Layout *ui.GoLayoutObj
 	GoColorState

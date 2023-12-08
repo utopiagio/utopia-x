@@ -27,5 +27,4 @@ require (
 )
 
 replace github.com/utopiagio/utopia => ../utopia
-
 replace github.com/utopiagio/gio => ../gio
