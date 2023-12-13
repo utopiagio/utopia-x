@@ -24,11 +24,11 @@ import (
 var modalDialog *ui.GoWindowObj
 
 const (
-	NoIcon byte[] = []byte{}
-	Question byte[] = icons.FileFolder
-	ShowInformation byte[]
-	Warning byte[]
-	Critical byte[]
+	NoIcon []byte = []byte{}
+	Question []byte = icons.FileFolder
+	ShowInformation []byte
+	Warning []byte
+	Critical []byte
 )
 
 func ShowInformation(parent ui.GoObject, caption string, text string) (action int, selectedPath string) {

@@ -15,9 +15,9 @@ import (
 
 
 	clip_gio "github.com/utopiagio/gio/op/clip"
+	font_gio "github.com/utopiagio/gio/font"
 	layout_gio "github.com/utopiagio/gio/layout"
 	paint_gio "github.com/utopiagio/gio/op/paint"
-	text_gio "github.com/utopiagio/gio/text"
 	unit_gio "github.com/utopiagio/gio/unit"
 
 	icons "golang.org/x/exp/shiny/materialdesign/icons"
@@ -25,7 +25,7 @@ import (
 
 
 
-var modalDialog *ui.GoWindowObj
+
 
 const (
 	Dir int = iota
@@ -33,6 +33,7 @@ const (
 )
 
 func GetOpenFileName(parent ui.GoObject, openPath string, label string) (action int, selectedPath string) {
+	var modalDialog *ui.GoWindowObj
 	modalDialog = ui.GoModalWindow("GoFileDialog", "Open")
 	modalDialog.SetSize(600, 400)
 	if openPath == "" {
@@ -40,19 +41,18 @@ func GetOpenFileName(parent ui.GoObject, openPath string, label string) (action 
 	}
 	
 	GoOpenFile(modalDialog.Layout(), openPath, "Open File Dialog", "")
-	ui.GoApp.AddWindow(modalDialog)
 	action, selectedPath = modalDialog.ShowModal()
 	return
 }
 
 func GetSaveFileName(parent ui.GoObject, savePath string, label string) (action int, selectedPath string) {
+	var modalDialog *ui.GoWindowObj
 	modalDialog = ui.GoModalWindow("GoFileDialog", "Save As")
 	modalDialog.SetSize(600, 400)
 	if savePath == "" {
 		savePath = "/"
 	}
 	GoSaveFile(modalDialog.Layout(), savePath, "Save File Dialog", "")
-	ui.GoApp.AddWindow(modalDialog)
 	action, selectedPath = modalDialog.ShowModal()
 	return
 }
@@ -364,7 +364,7 @@ type GoFileDialogObj struct {
 	//theme *GoThemeObj
 	//font text_gio.Font
 	//fontSize unit_gio.Sp
-	font text_gio.Font
+	font font_gio.Font
 	fontSize unit_gio.Sp
 	text string
 	color ui.GoColor
@@ -473,7 +473,7 @@ func (ob *GoFileDialogObj) FileViewItemClicked(nodeId []int) {
 		fileName := filepath_go.Base(path)
 		ob.lblSelectedName.SetText(fileName)
 	}
-	modalDialog.Refresh()
+	ob.ParentWindow().Refresh()
 }
 
 func (ob *GoFileDialogObj) ObjectType() (string) {
@@ -592,10 +592,11 @@ func (ob *GoFileDialogObj)populateDirView() {
 		}
 	}
 	ob.populateFileView(path)
-	modalDialog.Refresh()
+	ob.ParentWindow().Refresh()
 }
 
 func (ob *GoFileDialogObj)populateFileView(filepath string) {
+	fmt.Println("GoFileDialogObj::populateFileView()")
 	ob.filePath = filepath
 	files, err := os.ReadDir(filepath)
 	if err != nil {
@@ -617,7 +618,7 @@ func (ob *GoFileDialogObj)populateFileView(filepath string) {
 			}
 		}
 	}
-	modalDialog.Refresh()
+	ob.ParentWindow().Refresh()
 }
 
 func (ob *GoFileDialogObj)expandDirView(nodeId []int) {
@@ -680,5 +681,5 @@ func (ob *GoFileDialogObj)expandDirView(nodeId []int) {
 			}
 		}
 	}
-	modalDialog.Refresh()
+	ob.ParentWindow().Refresh()
 }
