@@ -23,7 +23,7 @@ import (
 
 var modalDialog *ui.GoWindowObj
 
-const (
+var (
 	NoIcon []byte = []byte{}
 	Question []byte = icons.FileFolder
 	ShowInformation []byte

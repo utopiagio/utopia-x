@@ -3,15 +3,17 @@
 package iconview
 
 import (
+	"image"
 	//"log"
 	//"encoding/hex"
 	//"strconv"
 	//"strings"
 	ui "github.com/utopiagio/utopia"
-	//layout_gio "github.com/utopiagio/gio/layout"
+	clip_gio "github.com/utopiagio/gio/op/clip"
+	layout_gio "github.com/utopiagio/gio/layout"
 	//pointer_gio "github.com/utopiagio/gio/io/pointer"
 	//text_gio "github.com/utopiagio/gio/text"
-	//unit_gio "github.com/utopiagio/gio/unit"
+	unit_gio "github.com/utopiagio/gio/unit"
 )
 
 
@@ -22,9 +24,10 @@ func GoIconView(parent ui.GoObject, label string) (hObj *GoIconViewObj) {
 	//theme := GoTheme(gofont_gio.Collection())
 	object := ui.GioObject{parent, parent.ParentWindow(), []ui.GoObject{}, ui.GetSizePolicy(ui.ExpandingWidth, ui.ExpandingHeight)}
 	widget := ui.GioWidget{
-		GoBorder: ui.GoBorder{ui.BorderNone, ui.Color_Black, 0, 0},
+		GoBorder: ui.GoBorder{ui.BorderNone, ui.Color_Black, 0, 0, 0},
 		GoMargin: ui.GoMargin{0,0,0,0},
 		GoPadding: ui.GoPadding{0,0,0,0},
+		GoSize: ui.GoSize{100, 100, 200, 200, 1000, 1000},
 		FocusPolicy: ui.NoFocus,
 		Visible: true,
 	}
@@ -36,7 +39,7 @@ func GoIconView(parent ui.GoObject, label string) (hObj *GoIconViewObj) {
 		hdrLabel: nil,
 	}
 	hIconView.layout = ui.GoVFlexBoxLayout(hIconView)
-	hIconView.hdrLabel = ui.H3Label(hIconView.layout, hdrLabel)
+	hIconView.hdrLabel = ui.H3Label(hIconView.layout, label)
 	return hIconView
 }
 
@@ -52,7 +55,7 @@ type GoIconViewObj struct {
 }
 
 func (ob *GoIconViewObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensions) {
-	dims = ui.layout_gio.Dimensions {Size: gtx.Constraints.Max,}
+	dims = layout_gio.Dimensions {Size: gtx.Constraints.Max,}
 	//log.Println("gtx.Constraints.Max: ", dims)
 	if ob.Visible {
 	//margin := layout_gio.Inset(ob.margin.Left)
@@ -67,10 +70,10 @@ func (ob *GoIconViewObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimension
 			//log.Println("BorderDims: ", borderDims)
 			return borderDims
 		})
-		ob.dims = dims
+		//ob.dims = dims
 		//log.Println("ButtonDims: ", dims)
-		ob.Width = (int(float32(dims.Size.X) / GoDpr))
-		ob.Height = (int(float32(dims.Size.Y) / GoDpr))
+		ob.Width = (int(float32(dims.Size.X) / ui.GoDpr))
+		ob.Height = (int(float32(dims.Size.Y) / ui.GoDpr))
 	}
 	return dims
 }
@@ -95,4 +98,12 @@ func (ob *GoIconViewObj) Layout(gtx layout_gio.Context) layout_gio.Dimensions {
 	ob.SignalEvents(gtx)
 	ob.layout.Draw(gtx)
 	return layout_gio.Dimensions{Size: dims}
+}
+
+func (ob *GoIconViewObj) ObjectType() (string) {
+	return "GoIconViewObj"
+}
+
+func (ob *GoIconViewObj) Widget() (*GioWidget) {
+	return &ob.GioWidget
 }

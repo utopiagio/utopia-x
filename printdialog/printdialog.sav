@@ -30,25 +30,25 @@ const (
 )
 
 func Print(parent ui.GoObject, openPath string, label string) (action int, selectedPath string) {
-	modalDialog = ui.GoModalWindow("GoFileDialog", "Open")
+	modalDialog = ui.GoModalWindow("GoPrintDialog", "Open")
 	modalDialog.SetSize(600, 400)
 	if openPath == "" {
 		openPath = "/"
 	}
 	
-	GoOpenFile(modalDialog.Layout(), openPath, "Open File Dialog", "")
+	GoPrintFile(modalDialog.Layout(), openPath, "Open File Dialog", "")
 	ui.GoApp.AddWindow(modalDialog)
 	action, selectedPath = modalDialog.ShowModal()
 	return
 }
 
-func GetSaveFileName(parent ui.GoObject, savePath string, label string) (action int, selectedPath string) {
+func GetPrintPage(parent ui.GoObject, savePath string, label string) (action int, selectedPath string) {
 	modalDialog = ui.GoModalWindow("GoFileDialog", "Save As")
 	modalDialog.SetSize(600, 400)
 	if savePath == "" {
 		savePath = "/"
 	}
-	GoSaveFile(modalDialog.Layout(), savePath, "Save File Dialog", "")
+	ui.GoSaveFile(modalDialog.Layout(), savePath, "Save File Dialog", "")
 	ui.GoApp.AddWindow(modalDialog)
 	action, selectedPath = modalDialog.ShowModal()
 	return
@@ -56,7 +56,7 @@ func GetSaveFileName(parent ui.GoObject, savePath string, label string) (action 
 
 
 
-// GoOpenFile creates an open file dialog.
+// GoPrint creates an open file dialog.
 func GoPrint(parent ui.GoObject, label string) (hObj *GoFileDialogObj) {
 	//theme := ui.GoApp.Theme()
 	//theme := GoTheme(gofont_gio.Collection())
@@ -71,7 +71,7 @@ func GoPrint(parent ui.GoObject, label string) (hObj *GoFileDialogObj) {
 		Visible: true,
 	}
 	
-	hFileDialog := &GoFileDialogObj{
+	hFileDialog := &GoPrintDialogObj{
 		GioObject: object,
 		GioWidget: widget,
 		layout: nil,
