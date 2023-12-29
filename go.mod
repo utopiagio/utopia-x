@@ -5,7 +5,7 @@ go 1.21.4
 require (
 	github.com/utopiagio/gio v0.0.1
 	github.com/utopiagio/utopia v0.0.1
-	golang.org/x/exp/shiny v0.0.0
+	golang.org/x/exp/shiny v0.0.0-20231226003508-02704c960a9b
 )
 
 require (
