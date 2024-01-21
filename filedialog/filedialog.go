@@ -8,24 +8,23 @@ import (
 	"image"
 	"log"
 	"os"
+	"runtime"
 	//"encoding/hex"
 	//"strconv"
 	"strings"
 	ui "github.com/utopiagio/utopia"
-
+	"github.com/utopiagio/utopia/metrics"
 
 	clip_gio "github.com/utopiagio/gio/op/clip"
 	font_gio "github.com/utopiagio/gio/font"
 	layout_gio "github.com/utopiagio/gio/layout"
+
 	paint_gio "github.com/utopiagio/gio/op/paint"
 	unit_gio "github.com/utopiagio/gio/unit"
 
+
 	icons "golang.org/x/exp/shiny/materialdesign/icons"
 )
-
-
-
-
 
 const (
 	Dir int = iota
@@ -69,7 +68,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 		GoBorder: ui.GoBorder{ui.BorderNone, ui.Color_Black, 0, 0, 0},
 		GoMargin: ui.GoMargin{0,0,0,0},
 		GoPadding: ui.GoPadding{0,0,0,0},
-		GoSize: ui.GoSize{100, 100, 200, 200, 1000, 1000},
+		GoSize: ui.GoSize{100, 100, 200, 200, 1000, 1000, 200, 200},
 		FocusPolicy: ui.NoFocus,
 		Visible: true,
 	}
@@ -95,7 +94,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 	
 	// ***************** Action Bar ********************* //
 
-	hFileDialog.ActionBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+	hFileDialog.ActionBar.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 	hFileDialog.ActionBar.SetPadding(4, 4, 4, 4)
 
 		cmdBack := ui.GoIconVGButton(hFileDialog.ActionBar, ui.GoIconVG(icons.NavigationArrowBack))
@@ -113,8 +112,8 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 
 			hFileDialog.lblFilePath = ui.GoLabel(hFileDialog.FilePath, hFileDialog.dirPath + " > ")
 			hFileDialog.lblFilePath.SetSelectable(true)
-			hFileDialog.lblFilePath.SetMargin(8,8,8,8)
-			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.ExpandingHeight)
+			hFileDialog.lblFilePath.SetMargin(8,4,8,4)
+			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 			spacer3 := ui.GoSpacer(hFileDialog.FilePath, 20)
 			spacer3.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
 			ui.GoIconVGButton(hFileDialog.FilePath, ui.GoIconVG(icons.NavigationRefresh))
@@ -161,7 +160,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 			cancel.SetOnClick(hFileDialog.ActionCancelDialog)
 			cancel.SetMargin(10,0,0,0)
 
-	// ***************** Center Layout ********************* //
+	// ***************** MenuBar Layout ********************* //
 
 	//fileBar := ui.GoHFlexBoxLayout(hFileDialog.FileLayout)
 	//fileBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
@@ -169,7 +168,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 	fileBar := ui.GoMenuBar(hFileDialog.FileLayout)
 	//fileBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
 	fileBar.SetBackgroundColor(ui.Color_WhiteSmoke)
-	fileBar.SetPadding(10,10,10,10)
+	fileBar.SetPadding(10,0,10,0)
 	fileBar.Show()
 	//fileBar.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
 	mnuView := fileBar.AddMenu("View")
@@ -179,6 +178,8 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 	mnuView.AddItem("Details")
 
 	/*button := ui.GoButton(fileBar, "Help")*/
+
+	// ***************** Center Layout ********************* //
 
 	fileViewLayout := ui.GoHFlexBoxLayout(hFileDialog.FileLayout)
 	hFileDialog.dirView = ui.GoListView(fileViewLayout)
@@ -211,7 +212,7 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 		GoBorder: ui.GoBorder{ui.BorderNone, ui.Color_Black, 0, 0, 0},
 		GoMargin: ui.GoMargin{0,0,0,0},
 		GoPadding: ui.GoPadding{0,0,0,0},
-		GoSize: ui.GoSize{100, 100, 200, 200, 1000, 1000},
+		GoSize: ui.GoSize{100, 100, 200, 200, 1000, 1000, 200, 200},
 		FocusPolicy: ui.NoFocus,
 		Visible: true,
 	}
@@ -237,7 +238,7 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 	
 	// ***************** Action Bar ********************* //
 
-	hFileDialog.ActionBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+	hFileDialog.ActionBar.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 	hFileDialog.ActionBar.SetPadding(4, 4, 4, 4)
 
 		cmdBack := ui.GoIconVGButton(hFileDialog.ActionBar, ui.GoIconVG(icons.NavigationArrowBack))
@@ -252,11 +253,14 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 		hFileDialog.FilePath.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
 
 			ui.GoIconVGButton(hFileDialog.FilePath, ui.GoIconVG(icons.FileFolder))
-
-			hFileDialog.lblFilePath = ui.GoLabel(hFileDialog.FilePath, hFileDialog.dirPath + " > ")
+			path := hFileDialog.dirPath
+			if runtime.GOOS == "windows" {
+				path = "C:" + hFileDialog.dirPath
+			}
+			hFileDialog.lblFilePath = ui.GoLabel(hFileDialog.FilePath, path + " > ")
 			hFileDialog.lblFilePath.SetSelectable(true)
 			hFileDialog.lblFilePath.SetMargin(8,8,8,8)
-			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.ExpandingHeight)
+			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.FixedHeight)
 			spacer3 := ui.GoSpacer(hFileDialog.FilePath, 20)
 			spacer3.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
 			ui.GoIconVGButton(hFileDialog.FilePath, ui.GoIconVG(icons.NavigationRefresh))
@@ -309,7 +313,7 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 	//fileBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
 	//fileBar.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
 	fileBar := ui.GoMenuBar(hFileDialog.FileLayout)
-	//fileBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+	//fileBar.SetSizePolicy(ui.ExpandingWidth, ui.FixededHeight)
 	fileBar.SetBackgroundColor(ui.Color_WhiteSmoke)
 	fileBar.SetPadding(10,10,10,10)
 	fileBar.Show()
@@ -384,7 +388,64 @@ type GoFileDialogObj struct {
 }
 
 func (ob *GoFileDialogObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensions) {
-	dims = layout_gio.Dimensions {Size: gtx.Constraints.Max,}
+	log.Println("GoListViewItemObj::Draw()")
+	cs := gtx.Constraints
+	//clipper := gtx.Constraints
+	log.Println("gtx.Constraints Min = (", cs.Min.X, cs.Min.Y, ") Max = (", cs.Max.X, cs.Max.Y, ")")
+	
+	width := metrics.DpToPx(ui.GoDpr, ob.Width)
+	height := metrics.DpToPx(ui.GoDpr, ob.Height)
+	minWidth := metrics.DpToPx(ui.GoDpr, ob.MinWidth)
+	minHeight := metrics.DpToPx(ui.GoDpr, ob.MinHeight)
+	maxWidth := metrics.DpToPx(ui.GoDpr, ob.MaxWidth)
+	maxHeight := metrics.DpToPx(ui.GoDpr, ob.MaxHeight)
+	
+	switch ob.SizePolicy().Horiz {
+	case ui.FixedWidth:			// SizeHint is Fixed
+		log.Println("FixedWidth............")
+		log.Println("object Width = (", width, " )")
+		cs.Min.X = min(cs.Max.X, width)
+		log.Println("cs.Min.X = (", cs.Min.X, " )")
+		cs.Max.X = min(cs.Max.X, width)
+		log.Println("cs.Max.X = (", cs.Max.X, " )")
+	/*case MinimumWidth:			// SizeHint is Minimum
+		cs.Min.X = min(cs.Min.X, minWidth)
+		cs.Max.X = min(cs.Max.X, maxWidth)*/
+	case ui.PreferredWidth:		// SizeHint is Preferred
+		log.Println("PreferredWidth............")
+		log.Println("object MinWidth = (", minWidth, " )")
+		log.Println("object MaxWidth = (", maxWidth, " )")
+		cs.Min.X = max(cs.Min.X, minWidth)
+		cs.Max.X = min(cs.Max.X, maxWidth)
+	/*case MaximumWidth:			// SizeHint is Maximum
+		cs.Min.X = max(cs.Min.X, minWidth) 	// No change to gtx.Constraints.X
+		cs.Max.X = min(cs.Max.X, maxWidth)*/
+	case ui.ExpandingWidth:
+		log.Println("ExpandingWidth............")
+		cs.Max.X = min(cs.Max.X, maxWidth)		// constrain to ob.MaxWidth
+		cs.Min.X = cs.Max.X						// set to cs.Max.X
+	}
+
+	switch ob.SizePolicy().Vert {
+	case ui.FixedHeight:			// SizeHint is Fixed 
+		cs.Min.Y = min(cs.Max.Y, height)
+		cs.Max.Y = min(cs.Max.Y, height)
+	/*case MinimumHeight:			// SizeHint is Minimum
+		cs.Min.Y = min(cs.Min.Y, ob.MinHeight)
+		cs.Max.Y = min(cs.Max.Y, ob.MaxHeight)*/
+	case ui.PreferredHeight:		// SizeHint is Preferred
+		cs.Min.Y = min(cs.Min.Y, minHeight)
+		cs.Max.Y = min(cs.Max.Y, maxHeight)
+	/*case MaximumHeight:			// SizeHint is Maximum
+		cs.Min.Y = min(cs.Min.Y, ob.MinHeight) 	// No change to gtx.Constraints.Y
+		cs.Max.Y = min(cs.Max.Y, ob.MaxHeight)*/
+	case ui.ExpandingHeight:
+		cs.Max.Y = min(cs.Max.Y, maxHeight)		// constrain to ob.MaxHeight
+		cs.Min.Y = cs.Max.Y						// set to cs.Max.Y
+	}
+
+	gtx.Constraints = cs
+	dims = layout_gio.Dimensions {Size: gtx.Constraints.Min,}
 	//log.Println("gtx.Constraints.Max: ", dims)
 	if ob.Visible {
 		dims = ob.GoMargin.Layout(gtx, func(gtx ui.C) ui.D {
@@ -400,22 +461,16 @@ func (ob *GoFileDialogObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensi
 		})
 		//ob.Dims = dims
 		//log.Println("FileView Dims: ", dims)
-		ob.Width = (int(float32(dims.Size.X) / ui.GoDpr))
-		ob.Height = (int(float32(dims.Size.Y) / ui.GoDpr))
+		ob.AbsWidth = (int(float32(dims.Size.X) / ui.GoDpr))
+		ob.AbsHeight = (int(float32(dims.Size.Y) / ui.GoDpr))
 	}
 	return dims
 }
 
 func (ob *GoFileDialogObj) Layout(gtx layout_gio.Context) layout_gio.Dimensions {
 	ob.ReceiveEvents(gtx)
-	width := gtx.Dp(unit_gio.Dp(ob.Width))
-	height := gtx.Dp(unit_gio.Dp(ob.Height))
-	if ob.SizePolicy().HFlex {
-		width = gtx.Constraints.Max.X
-	}
-	if ob.SizePolicy().VFlex {
-		height = gtx.Constraints.Max.Y
-	}
+	width := gtx.Constraints.Max.X
+	height := gtx.Constraints.Max.Y
 	dims := image.Point{X: width, Y: height}
 	rr := gtx.Dp(ob.cornerRadius)
 	defer clip_gio.UniformRRect(image.Rectangle{Max: dims}, rr).Push(gtx.Ops).Pop()
@@ -432,16 +487,18 @@ func (ob *GoFileDialogObj) DirViewItemClicked(nodeId []int) {
 	var listViewItem  *ui.GoListViewItemObj
 	var path string
 	path = ob.dirPath
-	//if path == "/" {path = ""}
 	listViewItem = ob.dirView.Objects()[nodeId[0]].(*ui.GoListViewItemObj)
 	path = path + listViewItem.Text() + "/"
 	for level := 1; level < len(nodeId); level++ {
 		listViewItem = listViewItem.Objects()[nodeId[level]].(*ui.GoListViewItemObj)
 		path = path + listViewItem.Text() + "/"
 	}
-
 	ob.filePath = path
-	ob.lblFilePath.SetText(path)
+	if runtime.GOOS == "windows" {
+		ob.lblFilePath.SetText("C:" + path)
+	} else {
+		ob.lblFilePath.SetText(path)
+	}
 	ob.lblSelectedName.SetText("")
 	ob.populateFileView(path)
 }
@@ -466,7 +523,6 @@ func (ob *GoFileDialogObj) FileViewItemClicked(nodeId []int) {
 	log.Println("FileViewItemClicked:", path)
 	info, err := os.Stat(path)
 	if err != nil {
-		
 		log.Fatal(err)
 	}
 	if info.Mode().IsRegular() {
