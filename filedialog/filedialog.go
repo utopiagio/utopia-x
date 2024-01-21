@@ -105,12 +105,15 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 		cmdUp.SetOnClick(hFileDialog.ActionSelectionUp)
 
 		hFileDialog.FilePath = ui.GoHFlexBoxLayout(hFileDialog.ActionBar)
-		hFileDialog.FilePath.SetSizePolicy(ui.ExpandingWidth, ui.ExpandingHeight)
+		hFileDialog.FilePath.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 		hFileDialog.FilePath.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
 
 			ui.GoIconVGButton(hFileDialog.FilePath, ui.GoIconVG(icons.FileFolder))
-
-			hFileDialog.lblFilePath = ui.GoLabel(hFileDialog.FilePath, hFileDialog.dirPath + " > ")
+			path := hFileDialog.dirPath
+			if runtime.GOOS == "windows" {
+				path = "C:" + hFileDialog.dirPath
+			}
+			hFileDialog.lblFilePath = ui.GoLabel(hFileDialog.FilePath, path + " > ")
 			hFileDialog.lblFilePath.SetSelectable(true)
 			hFileDialog.lblFilePath.SetMargin(8,4,8,4)
 			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
@@ -121,11 +124,11 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 	// ***************** Command Bar ********************* //
 
 	hFileDialog.CommandBar.SetBackgroundColor(ui.Color_WhiteSmoke)
-	hFileDialog.CommandBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+	hFileDialog.CommandBar.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 	hFileDialog.CommandBar.SetPadding(10, 10, 10, 10)
 	
 		selectionLayout := ui.GoHFlexBoxLayout(hFileDialog.CommandBar)
-		selectionLayout.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+		selectionLayout.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 
 			spacer1 := ui.GoSpacer(selectionLayout, 50)
 			spacer1.SetSizePolicy(ui.FixedWidth, ui.FixedHeight)
@@ -137,7 +140,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 			hFileDialog.lblSelectedName.SetBackgroundColor(ui.Color_White)
 			hFileDialog.lblSelectedName.SetMargin(10, 0, 0, 0)
 			hFileDialog.lblSelectedName.SetPadding(4, 4, 4, 4)
-			hFileDialog.lblSelectedName.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+			hFileDialog.lblSelectedName.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 
 			hFileDialog.lblSelectionFilter = ui.GoLabel(selectionLayout, "All Files (*.*)")
 			hFileDialog.lblSelectionFilter.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
@@ -145,10 +148,10 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 			hFileDialog.lblSelectionFilter.SetMargin(10, 0, 0, 0)
 			hFileDialog.lblSelectionFilter.SetPadding(4, 4, 4, 4)
 			hFileDialog.lblSelectionFilter.SetMinWidth(200)
-			hFileDialog.lblSelectionFilter.SetSizePolicy(ui.FixedWidth, ui.FixedHeight)
+			hFileDialog.lblSelectionFilter.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 
 		actionLayout := ui.GoHFlexBoxLayout(hFileDialog.CommandBar)
-		actionLayout.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+		actionLayout.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 		actionLayout.SetPadding(0, 10, 0, 0)
 
 			spacer2 := ui.GoSpacer(actionLayout, 0)
@@ -184,7 +187,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 	fileViewLayout := ui.GoHFlexBoxLayout(hFileDialog.FileLayout)
 	hFileDialog.dirView = ui.GoListView(fileViewLayout)
 	hFileDialog.dirView.SetLayoutMode(ui.Vertical)
-	hFileDialog.dirView.SetSizePolicy(ui.FixedWidth, ui.ExpandingHeight)
+	hFileDialog.dirView.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 	hFileDialog.dirView.SetWidth(260)
 	hFileDialog.dirView.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
 	hFileDialog.dirView.SetOnItemClicked(hFileDialog.DirViewItemClicked)
@@ -249,7 +252,7 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 		cmdUp.SetOnClick(hFileDialog.ActionSelectionUp)
 		
 		hFileDialog.FilePath = ui.GoHFlexBoxLayout(hFileDialog.ActionBar)
-		hFileDialog.FilePath.SetSizePolicy(ui.ExpandingWidth, ui.ExpandingHeight)
+		hFileDialog.FilePath.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 		hFileDialog.FilePath.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
 
 			ui.GoIconVGButton(hFileDialog.FilePath, ui.GoIconVG(icons.FileFolder))
@@ -259,8 +262,8 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 			}
 			hFileDialog.lblFilePath = ui.GoLabel(hFileDialog.FilePath, path + " > ")
 			hFileDialog.lblFilePath.SetSelectable(true)
-			hFileDialog.lblFilePath.SetMargin(8,8,8,8)
-			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.FixedHeight)
+			hFileDialog.lblFilePath.SetMargin(8,4,8,4)
+			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 			spacer3 := ui.GoSpacer(hFileDialog.FilePath, 20)
 			spacer3.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
 			ui.GoIconVGButton(hFileDialog.FilePath, ui.GoIconVG(icons.NavigationRefresh))
@@ -268,11 +271,11 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 	// ***************** Command Bar ********************* //
 
 	hFileDialog.CommandBar.SetBackgroundColor(ui.Color_WhiteSmoke)
-	hFileDialog.CommandBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+	hFileDialog.CommandBar.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 	hFileDialog.CommandBar.SetPadding(10, 10, 10, 10)
 	
 		selectionLayout := ui.GoHFlexBoxLayout(hFileDialog.CommandBar)
-		selectionLayout.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+		selectionLayout.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 
 			spacer1 := ui.GoSpacer(selectionLayout, 50)
 			spacer1.SetSizePolicy(ui.FixedWidth, ui.FixedHeight)
@@ -284,7 +287,7 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 			hFileDialog.lblSelectedName.SetBackgroundColor(ui.Color_White)
 			hFileDialog.lblSelectedName.SetMargin(10, 0, 0, 0)
 			hFileDialog.lblSelectedName.SetPadding(4, 4, 4, 4)
-			hFileDialog.lblSelectedName.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+			hFileDialog.lblSelectedName.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 
 			hFileDialog.lblSelectionFilter = ui.GoLabel(selectionLayout, "All Files (*.*)")
 			hFileDialog.lblSelectionFilter.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
@@ -292,10 +295,10 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 			hFileDialog.lblSelectionFilter.SetMargin(10, 0, 0, 0)
 			hFileDialog.lblSelectionFilter.SetPadding(4, 4, 4, 4)
 			hFileDialog.lblSelectionFilter.SetMinWidth(200)
-			hFileDialog.lblSelectionFilter.SetSizePolicy(ui.FixedWidth, ui.FixedHeight)
+			hFileDialog.lblSelectionFilter.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 
 		actionLayout := ui.GoHFlexBoxLayout(hFileDialog.CommandBar)
-		actionLayout.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+		actionLayout.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 		actionLayout.SetPadding(0, 10, 0, 0)
 
 			spacer2 := ui.GoSpacer(actionLayout, 0)
