@@ -1,0 +1,118 @@
+/* jsonview.go */
+
+package jsonview
+
+import (
+	ui "github.com/utopiagio/utopia"
+)
+
+type GoJsonViewObj struct {
+	ui.GioObject
+	ui.GioWidget
+
+	listview *ui.GoListViewObj
+
+	data string
+	lines []string
+	jsonlist []*ui.GoLabelObj
+}
+
+func GoJsonView() (*GoJsonViewObj) {
+	object := ui.GioObject{parent, parent.ParentWindow(), []ui.GoObject{}, ui.GetSizePolicy(ui.ExpandingWidth, ui.ExpandingHeight)}
+	widget := ui.GioWidget{
+		GoBorder: ui.GoBorder{ui.BorderNone, ui.Color_Black, 0, 0, 0},
+		GoMargin: ui.GoMargin{0,0,0,0},
+		GoPadding: ui.GoPadding{0,0,0,0},
+		GoSize: ui.GoSize{100, 100, 200, 200, 1000, 1000, 200, 200},
+		FocusPolicy: ui.NoFocus,
+		Visible: true,
+	}
+
+	hJsonView := &GoJsonViewObj{
+		GioObject: object,
+		GioWidget: widget,
+		layout *ui.GoLayoutObj,
+		listview: *ui.GoListViewObj,
+	}
+	hJsonView.layout = ui.GoVFlexBoxLayout(hJsonView)
+	hJsonView.listview = ui.GoListView(hJsonView.layout)
+	parent.AddControl(hJsonView)
+	return hJsonView
+}
+
+func (ob *GoJsonViewObj) SetData(data string) {
+	ob.data = data
+	ob.lines = strings.Split(data, "\n")
+
+	ob.jsonList = make([]*ui.GoLabelObj, len(ob.lines))
+	for i := range ob.jsonList {
+		ob.jsonList[i] = ui.GoLabelObj{}
+	}
+}
+
+func (ob *GoJsonViewObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensions) {
+	cs := gtx.Constraints
+	width := metrics.DpToPx(ui.GoDpr, ob.Width)
+	height := metrics.DpToPx(ui.GoDpr, ob.Height)
+	minWidth := metrics.DpToPx(ui.GoDpr, ob.MinWidth)
+	minHeight := metrics.DpToPx(ui.GoDpr, ob.MinHeight)
+	maxWidth := metrics.DpToPx(ui.GoDpr, ob.MaxWidth)
+	maxHeight := metrics.DpToPx(ui.GoDpr, ob.MaxHeight)
+	
+	switch ob.SizePolicy().Horiz {
+	case ui.FixedWidth:			// SizeHint is Fixed
+		w := min(maxWidth, width)			// constrain to ob.MaxWidth
+		cs.Min.X = max(minWidth, w)				// constrain to ob.MinWidth 
+		cs.Max.X = cs.Min.X						// set to cs.Min.X
+	case ui.MinimumWidth:			// SizeHint is Minimum
+		cs.Min.X = minWidth						// set to ob.MinWidth
+		cs.Max.X = minWidth						// set to ob.MinWidth
+	case ui.PreferredWidth:		// SizeHint is Preferred
+		cs.Min.X = minWidth						// constrain to ob.MinWidth
+		cs.Max.X = min(cs.Max.X, maxWidth)		// constrain to ob.MaxWidth
+	case ui.MaximumWidth:			// SizeHint is Maximum
+		cs.Max.X = maxWidth						// set to ob.MaxWidth
+		cs.Min.X = maxWidth						// set to ob.MaxWidth
+	case ui.ExpandingWidth:
+		cs.Max.X = min(cs.Max.X, maxWidth)		// constrain to ob.MaxWidth
+		cs.Min.X = cs.Max.X						// set to cs.Max.X
+	}
+
+	switch ob.SizePolicy().Vert {
+	case ui.FixedHeight:			// SizeHint is Fixed 
+		w := min(maxHeight, height)				// constrain to ob.MaxHeight
+		cs.Min.Y = max(minHeight, w)			// constrain to ob.MinHeight 
+		cs.Max.Y = cs.Min.Y						// set to cs.Min.Y
+	case ui.MinimumHeight:			// SizeHint is Minimum
+		cs.Min.Y = minHeight					// set to ob.MinHeight
+		cs.Max.Y = minHeight					// set to ob.MinHeight
+	case ui.PreferredHeight:		// SizeHint is Preferred
+		cs.Min.Y = max(0, minHeight)			// constrain to ob.MinHeight
+		cs.Max.Y = min(cs.Max.Y, maxHeight)		// constrain to ob.MaxHeight
+	case ui.MaximumHeight:			// SizeHint is Maximum
+		cs.Max.Y = maxHeight					// set to ob.MaxHeight
+		cs.Min.Y = maxHeight					// set to ob.MaxHeight
+	case ui.ExpandingHeight:
+		cs.Max.Y = min(cs.Max.Y, maxHeight)		// constrain to ob.MaxHeight
+		cs.Min.Y = cs.Max.Y						// set to cs.Max.Y
+	}
+
+	gtx.Constraints = cs
+	dims = layout_gio.Dimensions {Size: gtx.Constraints.Min,}
+	if ob.Visible {
+		dims = ob.GoMargin.Layout(gtx, func(gtx ui.C) ui.D {
+			borderDims := ob.GoBorder.Layout(gtx, func(gtx ui.C) ui.D {
+				paddingDims := ob.GoPadding.Layout(gtx, func(gtx ui.C) ui.D {
+					return ob.Layout(gtx)
+				})
+				return paddingDims
+			})
+			return borderDims
+		})
+		//ob.Dims = dims
+		ob.AbsWidth = (int(float32(dims.Size.X) / ui.GoDpr))
+		ob.AbsHeight = (int(float32(dims.Size.Y) / ui.GoDpr))
+	}
+	return dims
+}
+

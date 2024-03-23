@@ -5,7 +5,7 @@
 package filedialog
 
 import(
-	"log"
+	//"log"
 	filepath_go"path/filepath"
 	"syscall"
 )
@@ -20,7 +20,7 @@ func isHidden(filepath string, filename string) (bool, error) {
 
 	absPath, err := filepath_go.Abs(filepath + filename)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		return false, err
 	}
 	//log.Println("AbsPathb :", absPath)

@@ -1,0 +1,12 @@
+# Binaries
+.exe
+
+# Local dependancies
+local/
+
+# Addons under developement
+colorcontrol/
+colorpicker/
+iconview/
+messagebox/
+printdialog/

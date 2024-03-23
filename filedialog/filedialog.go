@@ -4,7 +4,7 @@ package filedialog
 
 import (
 	filepath_go "path/filepath"
-	"fmt"
+	//"fmt"
 	"image"
 	"log"
 	"os"
@@ -14,6 +14,8 @@ import (
 	"strings"
 	ui "github.com/utopiagio/utopia"
 	"github.com/utopiagio/utopia/metrics"
+	"github.com/utopiagio/utopia/history"
+	
 
 	clip_gio "github.com/utopiagio/gio/op/clip"
 	font_gio "github.com/utopiagio/gio/font"
@@ -115,7 +117,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 			}
 			hFileDialog.lblFilePath = ui.GoLabel(hFileDialog.FilePath, path + " > ")
 			hFileDialog.lblFilePath.SetSelectable(true)
-			hFileDialog.lblFilePath.SetMargin(8,4,8,4)
+			hFileDialog.lblFilePath.SetMargin(8,4,8,2)
 			hFileDialog.lblFilePath.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 			spacer3 := ui.GoSpacer(hFileDialog.FilePath, 20)
 			spacer3.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
@@ -130,9 +132,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 		selectionLayout := ui.GoHFlexBoxLayout(hFileDialog.CommandBar)
 		selectionLayout.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 
-			spacer1 := ui.GoSpacer(selectionLayout, 50)
-			spacer1.SetSizePolicy(ui.FixedWidth, ui.FixedHeight)
-
+			ui.GoSpacer(selectionLayout, 50)
 			/*lblFileName := */ui.GoLabel(selectionLayout, "File name:")
 
 			hFileDialog.lblSelectedName = ui.GoLabel(selectionLayout, "")
@@ -147,7 +147,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 			hFileDialog.lblSelectionFilter.SetBackgroundColor(ui.Color_White)
 			hFileDialog.lblSelectionFilter.SetMargin(10, 0, 0, 0)
 			hFileDialog.lblSelectionFilter.SetPadding(4, 4, 4, 4)
-			hFileDialog.lblSelectionFilter.SetMinWidth(200)
+			hFileDialog.lblSelectionFilter.SetWidth(160)
 			hFileDialog.lblSelectionFilter.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 
 		actionLayout := ui.GoHFlexBoxLayout(hFileDialog.CommandBar)
@@ -171,7 +171,7 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 	fileBar := ui.GoMenuBar(hFileDialog.FileLayout)
 	//fileBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
 	fileBar.SetBackgroundColor(ui.Color_WhiteSmoke)
-	fileBar.SetPadding(10,0,10,0)
+	fileBar.SetPadding(0,0,0,0)
 	fileBar.Show()
 	//fileBar.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
 	mnuView := fileBar.AddMenu("View")
@@ -190,17 +190,18 @@ func GoOpenFile(parent ui.GoObject, openPath string, label string, rootPath stri
 	hFileDialog.dirView.SetSizePolicy(ui.FixedWidth, ui.PreferredHeight)
 	hFileDialog.dirView.SetWidth(260)
 	hFileDialog.dirView.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
-	hFileDialog.dirView.SetOnItemClicked(hFileDialog.DirViewItemClicked)
-	hFileDialog.dirView.SetOnItemDoubleClicked(hFileDialog.DirViewItemDoubleClicked)
+	hFileDialog.dirView.SetOnItemClicked(hFileDialog.DirViewItem_Clicked)
+	hFileDialog.dirView.SetOnItemDoubleClicked(hFileDialog.DirViewItem_DoubleClicked)
 	hFileDialog.fileView = ui.GoListView(fileViewLayout)
 	hFileDialog.fileView.SetLayoutMode(ui.Vertical)
 	hFileDialog.fileView.SetSizePolicy(ui.ExpandingWidth, ui.ExpandingHeight)
 	hFileDialog.fileView.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
-	hFileDialog.fileView.SetOnItemClicked(hFileDialog.FileViewItemClicked)
+	hFileDialog.fileView.SetOnItemClicked(hFileDialog.FileViewItem_Clicked)
+	hFileDialog.fileView.SetOnItemDoubleClicked(hFileDialog.FileViewItem_DoubleClicked)
 	//icon := ui.GoIconVG(icons.NavigationArrowBack)
 	
 	hFileDialog.populateDirView()
-	hFileDialog.history = ui.GoFileHistory(hFileDialog.dirPath)
+	hFileDialog.history = history.GoFileHistory(hFileDialog.dirPath)
 	parent.AddControl(hFileDialog)
 	return hFileDialog
 }
@@ -336,19 +337,19 @@ func GoSaveFile(parent ui.GoObject, savePath string, label string, rootPath stri
 	hFileDialog.dirView.SetLayoutMode(ui.Vertical)
 	hFileDialog.dirView.SetWidth(260)
 	hFileDialog.dirView.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
-	hFileDialog.dirView.SetOnItemClicked(hFileDialog.DirViewItemClicked)
-	hFileDialog.dirView.SetOnItemDoubleClicked(hFileDialog.DirViewItemDoubleClicked)
+	hFileDialog.dirView.SetOnItemClicked(hFileDialog.DirViewItem_Clicked)
+	hFileDialog.dirView.SetOnItemDoubleClicked(hFileDialog.DirViewItem_DoubleClicked)
 	hFileDialog.fileView = ui.GoListView(fileViewLayout)
 	hFileDialog.fileView.SetSizePolicy(ui.ExpandingWidth, ui.ExpandingHeight)
 	hFileDialog.fileView.SetLayoutMode(ui.Vertical)
 	hFileDialog.fileView.SetBorder(ui.BorderSingleLine, 1, 0, ui.Color_Black)
-	hFileDialog.fileView.SetOnItemClicked(hFileDialog.FileViewItemClicked)
+	hFileDialog.fileView.SetOnItemClicked(hFileDialog.FileViewItem_Clicked)
 	
 	//icon := ui.GoIconVG(icons.NavigationArrowBack)
 
 	hFileDialog.populateDirView()
 	hFileDialog.populateFileView(hFileDialog.dirPath)
- 	hFileDialog.history = ui.GoFileHistory(hFileDialog.dirPath)
+ 	hFileDialog.history = history.GoFileHistory(hFileDialog.dirPath)
 	parent.AddControl(hFileDialog)
 	return hFileDialog
 }
@@ -383,19 +384,15 @@ type GoFileDialogObj struct {
 	filePath string 	// filePath is path of selected file in FileView
 	rootPath string		// rootPath is root directory in DirView
 	selectedFile string // selectedFile is name of selected file in FileView
-	//currentDir string
+	currentDirItem *ui.GoListViewItemObj
 
-	history *ui.GoHistoryObj
+	history *history.GoHistoryObj
 	//Label *ui.GoLabelObj
 	showHiddenFiles bool
 }
 
 func (ob *GoFileDialogObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensions) {
-	log.Println("GoListViewItemObj::Draw()")
 	cs := gtx.Constraints
-	//clipper := gtx.Constraints
-	log.Println("gtx.Constraints Min = (", cs.Min.X, cs.Min.Y, ") Max = (", cs.Max.X, cs.Max.Y, ")")
-	
 	width := metrics.DpToPx(ui.GoDpr, ob.Width)
 	height := metrics.DpToPx(ui.GoDpr, ob.Height)
 	minWidth := metrics.DpToPx(ui.GoDpr, ob.MinWidth)
@@ -405,43 +402,37 @@ func (ob *GoFileDialogObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensi
 	
 	switch ob.SizePolicy().Horiz {
 	case ui.FixedWidth:			// SizeHint is Fixed
-		log.Println("FixedWidth............")
-		log.Println("object Width = (", width, " )")
-		cs.Min.X = min(cs.Max.X, width)
-		log.Println("cs.Min.X = (", cs.Min.X, " )")
-		cs.Max.X = min(cs.Max.X, width)
-		log.Println("cs.Max.X = (", cs.Max.X, " )")
-	/*case MinimumWidth:			// SizeHint is Minimum
-		cs.Min.X = min(cs.Min.X, minWidth)
-		cs.Max.X = min(cs.Max.X, maxWidth)*/
+		w := min(maxWidth, width)			// constrain to ob.MaxWidth
+		cs.Min.X = max(minWidth, w)				// constrain to ob.MinWidth 
+		cs.Max.X = cs.Min.X						// set to cs.Min.X
+	case ui.MinimumWidth:			// SizeHint is Minimum
+		cs.Min.X = minWidth						// set to ob.MinWidth
+		cs.Max.X = minWidth						// set to ob.MinWidth
 	case ui.PreferredWidth:		// SizeHint is Preferred
-		log.Println("PreferredWidth............")
-		log.Println("object MinWidth = (", minWidth, " )")
-		log.Println("object MaxWidth = (", maxWidth, " )")
-		cs.Min.X = max(cs.Min.X, minWidth)
-		cs.Max.X = min(cs.Max.X, maxWidth)
-	/*case MaximumWidth:			// SizeHint is Maximum
-		cs.Min.X = max(cs.Min.X, minWidth) 	// No change to gtx.Constraints.X
-		cs.Max.X = min(cs.Max.X, maxWidth)*/
+		cs.Min.X = minWidth						// constrain to ob.MinWidth
+		cs.Max.X = min(cs.Max.X, maxWidth)		// constrain to ob.MaxWidth
+	case ui.MaximumWidth:			// SizeHint is Maximum
+		cs.Max.X = maxWidth						// set to ob.MaxWidth
+		cs.Min.X = maxWidth						// set to ob.MaxWidth
 	case ui.ExpandingWidth:
-		log.Println("ExpandingWidth............")
 		cs.Max.X = min(cs.Max.X, maxWidth)		// constrain to ob.MaxWidth
 		cs.Min.X = cs.Max.X						// set to cs.Max.X
 	}
 
 	switch ob.SizePolicy().Vert {
 	case ui.FixedHeight:			// SizeHint is Fixed 
-		cs.Min.Y = min(cs.Max.Y, height)
-		cs.Max.Y = min(cs.Max.Y, height)
-	/*case MinimumHeight:			// SizeHint is Minimum
-		cs.Min.Y = min(cs.Min.Y, ob.MinHeight)
-		cs.Max.Y = min(cs.Max.Y, ob.MaxHeight)*/
+		w := min(maxHeight, height)				// constrain to ob.MaxHeight
+		cs.Min.Y = max(minHeight, w)			// constrain to ob.MinHeight 
+		cs.Max.Y = cs.Min.Y						// set to cs.Min.Y
+	case ui.MinimumHeight:			// SizeHint is Minimum
+		cs.Min.Y = minHeight					// set to ob.MinHeight
+		cs.Max.Y = minHeight					// set to ob.MinHeight
 	case ui.PreferredHeight:		// SizeHint is Preferred
-		cs.Min.Y = min(cs.Min.Y, minHeight)
-		cs.Max.Y = min(cs.Max.Y, maxHeight)
-	/*case MaximumHeight:			// SizeHint is Maximum
-		cs.Min.Y = min(cs.Min.Y, ob.MinHeight) 	// No change to gtx.Constraints.Y
-		cs.Max.Y = min(cs.Max.Y, ob.MaxHeight)*/
+		cs.Min.Y = max(0, minHeight)			// constrain to ob.MinHeight
+		cs.Max.Y = min(cs.Max.Y, maxHeight)		// constrain to ob.MaxHeight
+	case ui.MaximumHeight:			// SizeHint is Maximum
+		cs.Max.Y = maxHeight					// set to ob.MaxHeight
+		cs.Min.Y = maxHeight					// set to ob.MaxHeight
 	case ui.ExpandingHeight:
 		cs.Max.Y = min(cs.Max.Y, maxHeight)		// constrain to ob.MaxHeight
 		cs.Min.Y = cs.Max.Y						// set to cs.Max.Y
@@ -449,21 +440,17 @@ func (ob *GoFileDialogObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensi
 
 	gtx.Constraints = cs
 	dims = layout_gio.Dimensions {Size: gtx.Constraints.Min,}
-	//log.Println("gtx.Constraints.Max: ", dims)
 	if ob.Visible {
 		dims = ob.GoMargin.Layout(gtx, func(gtx ui.C) ui.D {
 			borderDims := ob.GoBorder.Layout(gtx, func(gtx ui.C) ui.D {
 				paddingDims := ob.GoPadding.Layout(gtx, func(gtx ui.C) ui.D {
 					return ob.Layout(gtx)
 				})
-				//log.Println("PaddingDims: ", paddingDims)
 				return paddingDims
 			})
-			//log.Println("BorderDims: ", borderDims)
 			return borderDims
 		})
 		//ob.Dims = dims
-		//log.Println("FileView Dims: ", dims)
 		ob.AbsWidth = (int(float32(dims.Size.X) / ui.GoDpr))
 		ob.AbsHeight = (int(float32(dims.Size.Y) / ui.GoDpr))
 	}
@@ -471,7 +458,7 @@ func (ob *GoFileDialogObj) Draw(gtx layout_gio.Context) (dims layout_gio.Dimensi
 }
 
 func (ob *GoFileDialogObj) Layout(gtx layout_gio.Context) layout_gio.Dimensions {
-	ob.ReceiveEvents(gtx)
+	ob.ReceiveEvents(gtx, nil)
 	width := gtx.Constraints.Max.X
 	height := gtx.Constraints.Max.Y
 	dims := image.Point{X: width, Y: height}
@@ -486,16 +473,13 @@ func (ob *GoFileDialogObj) Layout(gtx layout_gio.Context) layout_gio.Dimensions 
 	return layout_gio.Dimensions{Size: dims}
 }
 
-func (ob *GoFileDialogObj) DirViewItemClicked(nodeId []int) {
-	var listViewItem  *ui.GoListViewItemObj
-	var path string
-	path = ob.dirPath
-	listViewItem = ob.dirView.Objects()[nodeId[0]].(*ui.GoListViewItemObj)
-	path = path + listViewItem.Text() + "/"
-	for level := 1; level < len(nodeId); level++ {
-		listViewItem = listViewItem.Objects()[nodeId[level]].(*ui.GoListViewItemObj)
-		path = path + listViewItem.Text() + "/"
+func (ob *GoFileDialogObj) DirViewItem_Clicked(nodeId []int) {
+	var path string = "/" + ob.rootPath 	// ob.rootPath can = ("")!
+	if len(path) > 1 {
+		if path[0:2] == "//" {path = path[1:]}
 	}
+	_, path = ob.getDirIndex(nodeId, path)
+	ob.dirPath = path
 	ob.filePath = path
 	if runtime.GOOS == "windows" {
 		ob.lblFilePath.SetText("C:" + path)
@@ -506,24 +490,21 @@ func (ob *GoFileDialogObj) DirViewItemClicked(nodeId []int) {
 	ob.populateFileView(path)
 }
 
-func (ob *GoFileDialogObj) DirViewItemDoubleClicked(nodeId []int) {
+func (ob *GoFileDialogObj) DirViewItem_DoubleClicked(nodeId []int) {
 	ob.expandDirView(nodeId)
-	ob.DirViewItemClicked(nodeId)
 }
 
-func (ob *GoFileDialogObj) FileViewItemClicked(nodeId []int) {
+func (ob *GoFileDialogObj) FileViewItem_Clicked(nodeId []int) {
 	var listViewItem  *ui.GoListViewItemObj
 	var path string
 	path = ob.dirPath
 	if path == "/" {path = ""}
-	log.Println("FileViewItemClicked:", nodeId)
 	listViewItem = ob.fileView.Objects()[nodeId[0]].(*ui.GoListViewItemObj)
 	path = ob.filePath + listViewItem.Text()
 	for level := 1; level <= len(nodeId) - 1; level++ {
 		listViewItem = listViewItem.Objects()[nodeId[level]].(*ui.GoListViewItemObj)
 		path = path + "/" + listViewItem.Text()
 	}
-	log.Println("FileViewItemClicked:", path)
 	info, err := os.Stat(path)
 	if err != nil {
 		log.Fatal(err)
@@ -533,6 +514,20 @@ func (ob *GoFileDialogObj) FileViewItemClicked(nodeId []int) {
 		ob.lblSelectedName.SetText(fileName)
 	}
 	ob.ParentWindow().Refresh()
+}
+
+func (ob *GoFileDialogObj) FileViewItem_DoubleClicked(nodeId []int) {
+	if !ob.currentDirItem.IsSelected() {
+		ob.currentDirItem.Expand()
+	}
+	idx, _ := ob.getFileIndex(nodeId)
+	fileViewItem := ob.fileView.Objects()[idx].(*ui.GoListViewItemObj)
+	for id := 0; id < ob.currentDirItem.ItemCount(); id++ {
+		dirViewItem := ob.currentDirItem.Objects()[id].(*ui.GoListViewItemObj)
+		if dirViewItem.Text() == fileViewItem.Text() {
+			dirViewItem.Trigger()
+		}
+	}
 }
 
 func (ob *GoFileDialogObj) ObjectType() (string) {
@@ -548,7 +543,7 @@ func (ob *GoFileDialogObj) Widget() (*ui.GioWidget) {
 }
 
 func (ob *GoFileDialogObj)ActionCancelDialog() {
-	log.Println("ActionCancel_Clicked().......")
+	//log.Println("ActionCancel_Clicked().......")
 	ob.ParentWindow().ModalAction = -1
 	ob.ParentWindow().ModalInfo = ob.filePath + ob.lblSelectedName.Text()
 	ob.ParentWindow().Close()
@@ -556,7 +551,7 @@ func (ob *GoFileDialogObj)ActionCancelDialog() {
 }
 
 func (ob *GoFileDialogObj)ActionOpenDialog() {
-	log.Println("ActionOpen_Clicked().......")
+	//log.Println("ActionOpen_Clicked().......")
 	ob.ParentWindow().ModalAction = 4
 	ob.ParentWindow().ModalInfo = ob.filePath + ob.lblSelectedName.Text()
 	ob.ParentWindow().Close()
@@ -594,7 +589,7 @@ func (ob *GoFileDialogObj)ActionSelectionUp() {
 		fmt.Println("")*/
 
 func (ob *GoFileDialogObj)populateDirView() {
-	fmt.Println("GoFileDialogObj::populateDirView()")
+	//fmt.Println("GoFileDialogObj::populateDirView()..............")
 	var listId int
 	var listIdx int
 	var parentListIdx int
@@ -606,17 +601,17 @@ func (ob *GoFileDialogObj)populateDirView() {
 	var dirList []string
 	//fmt.Println("ob.dirPath =", ob.dirPath)
 	dirList = strings.Split(ob.dirPath, "/")
-	fmt.Println("len(dirList) =", len(dirList))
+	//fmt.Println("len(dirList) =", len(dirList))
 	ob.dirView.ClearList()
 	path = ob.rootPath + "/"	// ob.rootPath can = ("")!
 	for x := 0; x < len(dirList) - 1; x++ {
 		parentListItem = nextLevelItem
 		parentListIdx = listIdx
 		parentPath = path
-		fmt.Println("x =", x)
-		fmt.Println("listItem =", dirList[x])
+		//fmt.Println("x =", x)
+		//fmt.Println("listItem =", dirList[x])
 		//path = path + "/" + dirList[x]
-		fmt.Println("path =", path)
+		//fmt.Println("path =", path)
 		files, err := os.ReadDir(parentPath)
 		if err != nil {
 			log.Fatal(err)
@@ -625,7 +620,7 @@ func (ob *GoFileDialogObj)populateDirView() {
 		for _, file := range files {
 			hidden, err := isHidden(parentPath, file.Name())
 			if err != nil {
-				log.Print(err)
+				//log.Print(err)
 				continue
 			}
 			if !hidden || ob.showHiddenFiles {
@@ -655,24 +650,25 @@ func (ob *GoFileDialogObj)populateDirView() {
 }
 
 func (ob *GoFileDialogObj)populateFileView(filepath string) {
-	fmt.Println("GoFileDialogObj::populateFileView()")
 	ob.filePath = filepath
 	files, err := os.ReadDir(filepath)
 	if err != nil {
+		//fmt.Println("error =", err)
 		log.Fatal(err)
 	}
 	ob.fileView.ClearList()
 	for _, file := range files {
 		hidden, err := isHidden(filepath, file.Name())
 		if err != nil {
-			log.Print(err)
+			//log.Print(err)
 			continue
 		}
 		if !hidden || ob.showHiddenFiles {
 			if file.IsDir() {
+				//fmt.Println("file.IsDir ", file.Name())
 				ob.fileView.AddListItem(icons.FileFolder, file.Name())
 			} else if file.Type() == 0 {
-				//ob.fileView.AddListItem(icons.ActionBook, file.Name())
+				//fmt.Println("file ", file.Name())
 				ob.fileView.AddListItem(icons.MapsLocalOffer, file.Name())
 			}
 		}
@@ -681,64 +677,122 @@ func (ob *GoFileDialogObj)populateFileView(filepath string) {
 }
 
 func (ob *GoFileDialogObj)expandDirView(nodeId []int) {
-	fmt.Println("GoFileDialogObj::expandDirView()")
+	//fmt.Println("GoFileDialogObj::expandDirView().............")
+	//log.Println("nodeId[] =", nodeId)
 	var listViewItem  *ui.GoListViewItemObj
 	var idx int
-	var path string = ob.rootPath + "/"	// ob.rootPath can = ("")!
+	var path string = "/" + ob.rootPath 	// ob.rootPath can = ("")!
 	if len(path) > 1 {
 		if path[0:2] == "//" {path = path[1:]}
 	}
-	for level := 0; level < len(nodeId); level++ {
-		if level == 0 {
-			for id := 0; id < nodeId[level]; id++ {
-				listViewItem = ob.dirView.Objects()[id].(*ui.GoListViewItemObj)
-				if listViewItem.IsExpanded() {
-					idx += listViewItem.ItemCount()
-				}
-			}
-			listViewItem = ob.dirView.Objects()[nodeId[0]].(*ui.GoListViewItemObj)
-			path = path + listViewItem.Text() + "/"
-			log.Println("path =", path)
-		} else {
-			for id := 0; id < nodeId[level]; id++ {
-				if listViewItem.Item(id).IsExpanded() {
-					idx += listViewItem.ItemCount()
-				}
-			}
-			listViewItem = listViewItem.Objects()[nodeId[level]].(*ui.GoListViewItemObj)
-			path = path + listViewItem.Text() + "/"
-		}
-		idx += nodeId[level] + 1
-	}
+	idx, path = ob.getDirIndex(nodeId, path)
+	ob.dirPath = path
+	//log.Println("idx =", idx)
+	//log.Println("dirPath =", ob.dirPath)
+	listViewItem = ob.dirView.Objects()[idx].(*ui.GoListViewItemObj)
 	if listViewItem.IsExpanded() {
-		listViewItemSize := len(listViewItem.Objects())
-		for x := 0; x < listViewItemSize; x++ {
-			item := listViewItem.Objects()[0]
-			log.Println("RemoveListItem(", item.(*ui.GoListViewItemObj).Id(), ")")
-			listViewItem.RemoveListItem(item, idx)
-		}
+		ob.deleteListViewItems(listViewItem, idx)
+		
 		listViewItem.SetExpanded(false)
 	} else {
-		files, err := os.ReadDir(path)
+		//log.Println("ReadDir path =", ob.dirPath)
+		
+		files, err := os.ReadDir(ob.dirPath)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, file := range files {
 			hidden, err := isHidden(path, file.Name())
 			if err != nil {
-				log.Print(err)
+				//log.Print(err)
 				continue
 			}
 			if !hidden || ob.showHiddenFiles {
 				if file.IsDir() {
+					idx++
 					listItem := listViewItem.InsertListItem(icons.FileFolder, file.Name(), idx)
 					listItem.SetWidth(listItem.ListView().MaxWidth)
 					listViewItem.SetExpanded(true)
 					listViewItem.ClearFocus()
-					idx++
 				}
 			}
 		}
 	}
 	ob.ParentWindow().Refresh()
+}
+
+func (ob *GoFileDialogObj) deleteListViewItems(listViewItem *ui.GoListViewItemObj, idx int) {
+	if listViewItem.IsExpanded() {
+		listViewItemSize := len(listViewItem.Objects())
+		for x := 0; x < listViewItemSize; x++ {
+			item := listViewItem.Objects()[0]
+			if item.(*ui.GoListViewItemObj).IsExpanded() {
+				ob.deleteListViewItems(item.(*ui.GoListViewItemObj), idx + 1)
+			}
+			//log.Println("RemoveListItem(", item.(*ui.GoListViewItemObj).Id(), ")")
+			listViewItem.RemoveListItem(item, idx)
+		}
+	}
+}
+
+func (ob *GoFileDialogObj) getDirIndex(nodeId []int, rootPath string) (index int, path string) {
+	var listViewItem *ui.GoListViewItemObj
+	var idx int = -1
+	path = rootPath
+	for level := 0; level < len(nodeId); level++ {
+		//log.Println("level :", level)
+		idx++
+		for id := 0; id < nodeId[level]; id++ {
+			//log.Println("id :", id)
+			//log.Println("idx :", idx)
+			listViewItem = ob.dirView.Objects()[idx].(*ui.GoListViewItemObj)
+			idx += ob.getItemCount(listViewItem)
+		}
+		listViewItem = ob.dirView.Objects()[idx].(*ui.GoListViewItemObj)
+		path = path + listViewItem.Text() + "/"
+	}
+	ob.currentDirItem = listViewItem
+	return idx, path
+}
+
+func (ob *GoFileDialogObj) getFileIndex(nodeId []int) (index int, path string) {
+	var listViewItem *ui.GoListViewItemObj
+	var idx int = -1
+	path = ob.rootPath
+	for level := 0; level < len(nodeId); level++ {
+		//log.Println("level :", level)
+		idx++
+		for id := 0; id < nodeId[level]; id++ {
+			//log.Println("id :", id)
+			//log.Println("idx :", idx)
+			listViewItem = ob.fileView.Objects()[idx].(*ui.GoListViewItemObj)
+			idx += ob.getItemCount(listViewItem)
+		}
+		listViewItem = ob.dirView.Objects()[idx].(*ui.GoListViewItemObj)
+		path = path + listViewItem.Text() + "/"
+	}
+	return idx, path
+}
+
+func (ob *GoFileDialogObj) getFilePath(listViewItem *ui.GoListViewItemObj) (path string) {
+	path = "/" + listViewItem.Text()
+	for {
+		listViewItem = listViewItem.ParentControl().(*ui.GoListViewItemObj)
+		if listViewItem.ObjectType() == "GoListViewItem" {
+			path = "/" + listViewItem.Text() + path
+		}
+	}
+	return path
+}
+
+func (ob *GoFileDialogObj)getItemCount(listViewItem *ui.GoListViewItemObj) (count int) {
+	if listViewItem.IsExpanded() {
+		for id := 0; id < listViewItem.ItemCount(); id++ {
+			item := listViewItem.Objects()[id].(*ui.GoListViewItemObj)
+			count += ob.getItemCount(item)
+		}
+	}
+	count++
+	//log.Println("getItemCount :", listViewItem.Text(), count)
+	return count
 }
