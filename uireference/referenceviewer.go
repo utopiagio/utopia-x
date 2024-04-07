@@ -70,6 +70,7 @@ func Page(parent ui.GoObject, logo string, section string, content string) (hObj
     //hUIRef.navigator.SetOnItemClicked(hUIRef.NavLink_Clicked)
     hUIRef.setupNavigator()
     hUIRef.navigator.SetOnItemClicked(hUIRef.NavLink_Clicked)
+    hUIRef.navigator.SetOnItemDoubleClicked(hUIRef.NavLink_DoubleClicked)
 
     hUIRef.mainview = ui.GoVBoxLayout(hUIRef.mainpanel)
     hUIRef.mainview.SetSizePolicy(ui.ExpandingWidth, ui.ExpandingHeight)
@@ -161,16 +162,16 @@ func (ob *PageObj) Link_Clicked(link string) {
                 doc = ob.currentDoc.Name()
                 link = doc + anchor
             }
-            //log.Println("Link_Clicked:", link)
-            //log.Println("Link doc =", doc, "anchor =", anchor)
-            //log.Println("CurrentPath:", ob.docHistory.CurrentPath())
-            //log.Println("CurrentDoc:", ob.currentDoc.Name())
+            log.Println("Link_Clicked:", link)
+            log.Println("Link doc =", doc, "anchor =", anchor)
+            log.Println("CurrentPath:", ob.docHistory.CurrentPath())
+            log.Println("CurrentDoc:", ob.currentDoc.Name())
             if link == ob.docHistory.CurrentPath() {
                 return
             }
             // load document into viewer
             if doc != ob.currentDoc.Name() {
-                //log.Println("Load doc......................")
+                log.Println("Load doc......................")
                 ob.Load(doc)
             }
             if anchor != "" {
@@ -205,7 +206,7 @@ func (ob *PageObj) Load(doc string) {
         ob.currentDoc.SetOnLinkClick(ob.Link_Clicked)
     }
     ob.mainview.ScrollToOffset(0)
-    //log.Println("Load doc.................EXIT.....")
+    log.Println("Load doc.................EXIT.....")
 }
 
 func (ob *PageObj) NavLink_Clicked(nodeId []int) {
@@ -237,6 +238,16 @@ func (ob *PageObj) NavLink_Clicked(nodeId []int) {
     }
     //log.Println("Link_Clicked(", link, ")")
     ob.Link_Clicked(link)
+}
+
+func (ob *PageObj) NavLink_DoubleClicked(nodeId []int) {
+    listItem := ob.navigator.Item(nodeId)
+    if listItem.IsExpanded() {
+        listItem.SetExpanded(false)
+    } else {
+        listItem.SetExpanded(true)
+    }
+    ob.navigator.SwitchFocus(listItem)
 }
 
 func (ob *PageObj) switchNavigatorFocus(docRequest string) {
@@ -274,6 +285,7 @@ func (ob *PageObj) switchNavigatorFocus(docRequest string) {
 func (ob *PageObj) setupNavigator() {
     /*overview := */ob.navigator.AddListItem(nil, "Overview")
     api_reference := ob.navigator.AddListItem(nil, "API Reference")
+    api_reference.AddListItem(nil, "GoApplication")
     api_reference.AddListItem(nil, "GoWindow")
     api_reference.AddListItem(nil, "GoButton")
     api_reference.AddListItem(nil, "GoButtonGroup")
