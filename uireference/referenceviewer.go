@@ -12,6 +12,7 @@ import (
     "github.com/utopiagio/utopia/history"
     "github.com/utopiagio/docs"
     "github.com/pkg/browser"
+     "golang.org/x/exp/shiny/materialdesign/icons"
 )
 
 type PageObj struct {
@@ -36,6 +37,37 @@ func Page(parent ui.GoObject, logo string, section string, content string) (hObj
     hUIRef := &PageObj{
         Layout: layout,        
     }
+
+    navBar := ui.GoHFlexBoxLayout(layout)
+    navBar.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+    navBar.SetHeight(36)
+    navBar.SetBackgroundColor(ui.Color_LavenderBlush)
+
+        ui.GoSpacer(navBar, 20)
+
+        icoBack := ui.GoIconVG(icons.NavigationArrowBack)
+        navBack := ui.GoIconVGButton(navBar, icoBack)
+        navBack.SetOnClick(hUIRef.ActionBackHistory)
+        navBack.SetMargin(4,4,4,4)
+        navBack.SetMinWidth(40)
+        navBack.SetFaceColor(ui.Color_LavenderBlush)
+
+        icoForward := ui.GoIconVG(icons.NavigationArrowForward)
+        navForward := ui.GoIconVGButton(navBar, icoForward)
+        navForward.SetOnClick(hUIRef.ActionForwardHistory)
+        navForward.SetMargin(4,4,4,4)
+        navForward.SetMinWidth(40)
+        navForward.SetFaceColor(ui.Color_LavenderBlush)
+
+        pad := ui.GoSpacer(navBar, 0)
+        pad.SetSizePolicy(ui.ExpandingWidth, ui.FixedHeight)
+
+        //hint := ui.GoLabel(navBar, "Shortcut Keys. Page Back: '<' Pge Forward: '>'")
+        //hint.SetMargin(0,7,0,5)
+        ui.GoSpacer(navBar, 20)
+
+
+
     hdrLayout := ui.GoHFlexBoxLayout(layout)
     hdrLayout.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 
@@ -162,16 +194,16 @@ func (ob *PageObj) Link_Clicked(link string) {
                 doc = ob.currentDoc.Name()
                 link = doc + anchor
             }
-            log.Println("Link_Clicked:", link)
-            log.Println("Link doc =", doc, "anchor =", anchor)
-            log.Println("CurrentPath:", ob.docHistory.CurrentPath())
-            log.Println("CurrentDoc:", ob.currentDoc.Name())
+            //log.Println("Link_Clicked:", link)
+            //log.Println("Link doc =", doc, "anchor =", anchor)
+            //log.Println("CurrentPath:", ob.docHistory.CurrentPath())
+            //log.Println("CurrentDoc:", ob.currentDoc.Name())
             if link == ob.docHistory.CurrentPath() {
                 return
             }
             // load document into viewer
             if doc != ob.currentDoc.Name() {
-                log.Println("Load doc......................")
+                //log.Println("Load doc......................")
                 ob.Load(doc)
             }
             if anchor != "" {
@@ -206,7 +238,6 @@ func (ob *PageObj) Load(doc string) {
         ob.currentDoc.SetOnLinkClick(ob.Link_Clicked)
     }
     ob.mainview.ScrollToOffset(0)
-    log.Println("Load doc.................EXIT.....")
 }
 
 func (ob *PageObj) NavLink_Clicked(nodeId []int) {
