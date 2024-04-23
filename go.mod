@@ -4,9 +4,9 @@ go 1.21.4
 
 require (
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
-	github.com/utopiagio/docs v0.0.2
-	github.com/utopiagio/gio v0.0.6
-	github.com/utopiagio/utopia v0.0.10
+	github.com/utopiagio/docs v0.0.3
+	github.com/utopiagio/gio v0.0.7
+	github.com/utopiagio/utopia v0.0.11
 	golang.org/x/exp/shiny v0.0.0-20240318143956-a85f2c67cd81
 )
 
@@ -19,7 +19,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/phin1x/go-ipp v1.6.1 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
-	github.com/utopiagio/gio-x v0.0.4 // indirect
+	github.com/utopiagio/gio-x v0.0.7 // indirect
 	github.com/yuin/goldmark v1.4.13 // indirect
 	golang.design/x/clipboard v0.7.0 // indirect
 	golang.org/x/exp v0.0.0-20240318143956-a85f2c67cd81 // indirect
@@ -28,5 +28,3 @@ require (
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
-
-replace github.com/utopiagio/docs => ../docs

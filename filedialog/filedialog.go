@@ -491,7 +491,7 @@ func (ob *GoFileDialogObj) DirViewItem_Clicked(nodeId []int) {
 }
 
 func (ob *GoFileDialogObj) DirViewItem_DoubleClicked(nodeId []int) {
-	log.Println("GoFileDialogObj::DirViewItem_DoubleClicked")
+	//log.Println("GoFileDialogObj::DirViewItem_DoubleClicked")
 	ob.expandDirView(nodeId)
 }
 
@@ -678,8 +678,8 @@ func (ob *GoFileDialogObj)populateFileView(filepath string) {
 }
 
 func (ob *GoFileDialogObj)expandDirView(nodeId []int) {
-	log.Println("GoFileDialogObj::expandDirView().............")
-	log.Println("nodeId[] =", nodeId)
+	//log.Println("GoFileDialogObj::expandDirView().............")
+	//log.Println("nodeId[] =", nodeId)
 	var listViewItem  *ui.GoListViewItemObj
 	var idx int
 	var path string = "/" + ob.rootPath 	// ob.rootPath can = ("")!
@@ -688,25 +688,25 @@ func (ob *GoFileDialogObj)expandDirView(nodeId []int) {
 	}
 	idx, path = ob.getDirIndex(nodeId, path)
 	ob.dirPath = path
-	log.Println("idx =", idx)
-	log.Println("dirPath =", ob.dirPath)
+	//log.Println("idx =", idx)
+	//log.Println("dirPath =", ob.dirPath)
 	listViewItem = ob.dirView.Objects()[idx].(*ui.GoListViewItemObj)
-	log.Println("listViewItem.Text() =", listViewItem.Text())
-	log.Println("listViewItem.IsExpanded() =", listViewItem.IsExpanded())
+	//log.Println("listViewItem.Text() =", listViewItem.Text())
+	//log.Println("listViewItem.IsExpanded() =", listViewItem.IsExpanded())
 	if listViewItem.IsExpanded() {
-		log.Println("listViewItem.IsExpanded() = true")
+		//log.Println("listViewItem.IsExpanded() = true")
 		ob.deleteListViewItems(listViewItem, idx)
 		
 		listViewItem.SetExpanded(false)
 	} else {
-		log.Println("ReadDir path =", ob.dirPath)
+		//log.Println("ReadDir path =", ob.dirPath)
 		
 		files, err := os.ReadDir(ob.dirPath)
 		if err != nil {
 			log.Fatal(err)
 		}
 		for _, file := range files {
-			log.Println("File =", file.Name())
+			//log.Println("File =", file.Name())
 			hidden, err := isHidden(path, file.Name())
 			if err != nil {
 				log.Print(err)
@@ -714,7 +714,7 @@ func (ob *GoFileDialogObj)expandDirView(nodeId []int) {
 			}
 			if !hidden || ob.showHiddenFiles {
 				if file.IsDir() {
-					log.Println("File.IsDir", file.Name())
+					//log.Println("File.IsDir", file.Name())
 					idx++
 					listItem := listViewItem.InsertListItem(icons.FileFolder, file.Name(), idx)
 					listItem.SetWidth(listItem.ListView().MaxWidth)
