@@ -6,7 +6,7 @@ require (
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/utopiagio/docs v0.0.3
 	github.com/utopiagio/gio v0.0.7
-	github.com/utopiagio/utopia v0.0.11
+	github.com/utopiagio/utopia v0.0.12
 	golang.org/x/exp/shiny v0.0.0-20240318143956-a85f2c67cd81
 )
 

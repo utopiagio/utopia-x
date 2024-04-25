@@ -12,7 +12,7 @@ import (
     "github.com/utopiagio/utopia/history"
     "github.com/utopiagio/docs"
     "github.com/pkg/browser"
-     "golang.org/x/exp/shiny/materialdesign/icons"
+    "golang.org/x/exp/shiny/materialdesign/icons"
 )
 
 type PageObj struct {
@@ -71,9 +71,9 @@ func Page(parent ui.GoObject, logo string, section string, content string) (hObj
     hdrLayout := ui.GoHFlexBoxLayout(layout)
     hdrLayout.SetSizePolicy(ui.ExpandingWidth, ui.PreferredHeight)
 
-    /*hUIRef.popup.SetSize(700, 200)
-    hUIRef.popup.SetLayoutStyle(ui.VFlexBoxLayout)
-    hUIRef.popup.Layout().SetPadding(10,10,10,10)*/
+    //hUIRef.popup.SetSize(700, 200)
+    //hUIRef.popup.SetLayoutStyle(ui.VFlexBoxLayout)
+    //hUIRef.popup.Layout().SetPadding(10,10,10,10)
 
     hUIRef.hdrLogo = ui.H2Label(hdrLayout, logo)
     hUIRef.hdrLogo.SetFontBold(true)
@@ -114,7 +114,6 @@ func Page(parent ui.GoObject, logo string, section string, content string) (hObj
     //hUIRef.richText[0].SetOnLinkClick(hUIRef.Link_Clicked)
     //mainview.SetMargin(10,10,10,10)
     //mainview.SetBorder(ui.BorderSingleLine, 2, 6, ui.Color_LightBlue)
-    
     title, name, docContent := docs.Page(startDoc)
     hUIRef.hdrSection.SetText(title)
     for x := 0; x < len(docContent); x++ {
